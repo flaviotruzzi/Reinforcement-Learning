@@ -107,11 +107,13 @@ class nArmedBandit:
   def testBedSimulatedAnnealing(self, temperature, alpha):
     sys.stdout.write("\r TestBed Simulated Annealing, Ti=" + repr(temperature) + "\n")
     for i in xrange(self.s):
-      self.inittask()
+      self.initTask()
       for j in xrange(self.plays):
         a = self.softMaxAction(temperature)
+        print a, i
         r = np.random.normal(loc=self.qstar[a,i], scale=1)
-        self.updateQ(r, q)
+        print self.q, r
+        self.updateQ(r, a)
         sys.stdout.write("\r Task: " + repr(i))
         sys.stdout.flush()
         self.rewards[j] += r
@@ -128,14 +130,15 @@ class nArmedBandit:
 
 def bench():
   greedy = nArmedBandit(qstar=qstar)
+#  simulatedAnnealing = nArmedBandit(qstar=qstar)
   egreedy = nArmedBandit(epsilon=.1,qstar=qstar)
   e2greedy = nArmedBandit(epsilon=.05,qstar=qstar)
   e3greedy = nArmedBandit(epsilon=0.01,qstar=qstar)
   softMax10 = nArmedBandit(qstar=qstar)
   softMax01 = nArmedBandit(qstar=qstar)
   softMax05 = nArmedBandit(qstar=qstar)
-  simulatedAnnealing = nArmedBandit(qstar=qstar)
 
+  simulatedAnnealing.testBedSimulatedAnnealing(temperature=10, alpha=.9)
   greedy.testBedGreedy()
   egreedy.testBedEGreedy()
   e2greedy.testBedEGreedy()
@@ -143,7 +146,6 @@ def bench():
   softMax10.testBedSoftMax(10)
   softMax01.testBedSoftMax(0.1)
   softMax05.testBedSoftMax(0.5)
-  simulatedAnnealing.testBedSimulatedAnnealing(temperature=10, alpha=.9)
 
   s = 2000
   fig = pl.figure()
@@ -154,7 +156,7 @@ def bench():
   pl.plot(softMax10.rewards/s, label="$SoftMax (T=10)$")
   pl.plot(softMax01.rewards/s, label="$SoftMax (T=0.1)$")
   pl.plot(softMax05.rewards/s, label="$SoftMax (T=0.5)$")
-  pl.plot(simulatedAnnealing.rewards/s, label="$Simulated\:Annealing (T=10, \alpha=.9)$")
+ # pl.plot(simulatedAnnealing.rewards/s, label="$Simulated\:Annealing (T=10, \alpha=.9)$")
 
   pl.xlabel("$Plays$")
   pl.ylabel("$Average\:reward$")
@@ -168,7 +170,7 @@ def bench():
   pl.plot(100*softMax10.actions/s, label="$SotMax (T=10)$")
   pl.plot(100*softMax01.actions/s, label="$SotMax (T=0.1)$")
   pl.plot(100*softMax05.actions/s, label="$SotMax (T=0.5)$")
-  pl.plot(100*simulatedAnnealing.rewards/s, label="$Simulated\:Annealing (T=10, \alpha=.9)$")
+  #pl.plot(100*simulatedAnnealing.rewards/s, label="$Simulated\:Annealing (T=10, \alpha=.9)$")
 
   pl.xlabel("$Plays$")
   pl.ylabel("$Optimality\,\%$")
