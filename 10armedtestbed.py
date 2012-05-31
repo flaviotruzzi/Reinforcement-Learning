@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import numpy as np
 import sys
 import pylab as pl
@@ -17,7 +19,9 @@ class nArmedBandit:
     self.total_counts = np.zeros(n)
     self.total_accs = np.zeros(n)
 
-    self.rewards = np.zeros((1000, 2000))
+    self.rewards = np.zeros(1000) # Vetor acumulando recompensas por play
+
+    self.actions = np.zeros(1000) # Vetor acumulando qtas ações foram ótimas...
 
   def initTask(self):
     self.qstar = np.random.normal(loc = 0, scale = 1, size = self.n)
@@ -49,7 +53,9 @@ class nArmedBandit:
         self.updateQ(r, a)
         sys.stdout.write("\r Task: " + repr(i)) 
         sys.stdout.flush()
-        self.rewards[j,i] = r
+        self.rewards[j] += r
+        if a == np.argmax(self.qstar):
+          self.actions[j] += 1
       self.estimated_q += self.q
       self.total_counts += 1
       self.total_accs += self.accumulated
@@ -66,7 +72,9 @@ class nArmedBandit:
         self.updateQ(r, a)
         sys.stdout.write("\r Task: " + repr(i))
         sys.stdout.flush()
-        self.rewards[j,i] = r
+        self.rewards[j] += r
+        if a == np.argmax(self.qstar):
+          self.actions[j] += 1
       self.estimated_q += self.q
       self.total_counts += 1
       self.total_accs += self.accumulated
@@ -83,10 +91,24 @@ egreedy.testBedEGreedy()
 e2greedy.testBedEGreedy()
 e3greedy.testBedEGreedy()
 
+s = 2000
 fig = pl.figure()
-pl.plot(greedy.rewards.mean(axis=1), label="Greedy")
-pl.plot(egreedy.rewards.mean(axis=1), label="$\epsilon$-Greedy = 0.1")
-pl.plot(e2greedy.rewards.mean(axis=1), label="$\epsilon$-Greedy = 0.05")
-pl.plot(e3greedy.rewards.mean(axis=1), label="$\epsilon$-Greedy = 0.01")
-pl.legend()
+pl.plot(greedy.rewards/s, label="$Greedy$")
+pl.plot(egreedy.rewards/s, label="$\epsilon-greedy = 0.1$")
+pl.plot(e2greedy.rewards/s, label="$\epsilon-greedy = 0.05$")
+pl.plot(e3greedy.rewards/s, label="$\epsilon-greedy = 0.01$")
+pl.xlabel("$Plays$")
+pl.ylabel("$Average\:reward$")
+pl.legend(loc='bottom right')
+
+fig = pl.figure()
+pl.plot(100*greedy.actions/s, label="$Greedy$")
+pl.plot(100*egreedy.actions/s, label="$\epsilon-greedy = 0.1$")
+pl.plot(100*e2greedy.actions/s, label="$\epsilon-greedy = 0.05$")
+pl.plot(100*e3greedy.actions/s, label="$\epsilon-greedy = 0.01$")
+pl.xlabel("$Plays$")
+pl.ylabel("$Optimality\,\%$")
+pl.legend(loc='bottom right')
+
 pl.show()
+
