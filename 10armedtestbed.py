@@ -99,7 +99,7 @@ pl.plot(e2greedy.rewards/s, label="$\epsilon-greedy = 0.05$")
 pl.plot(e3greedy.rewards/s, label="$\epsilon-greedy = 0.01$")
 pl.xlabel("$Plays$")
 pl.ylabel("$Average\:reward$")
-pl.legend(loc='bottom right')
+pl.legend(loc='lower right')
 
 fig = pl.figure()
 pl.plot(100*greedy.actions/s, label="$Greedy$")
@@ -108,7 +108,7 @@ pl.plot(100*e2greedy.actions/s, label="$\epsilon-greedy = 0.05$")
 pl.plot(100*e3greedy.actions/s, label="$\epsilon-greedy = 0.01$")
 pl.xlabel("$Plays$")
 pl.ylabel("$Optimality\,\%$")
-pl.legend(loc='bottom right')
+pl.legend(loc='lower right')
 
 pl.show()
 
