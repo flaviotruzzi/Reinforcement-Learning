@@ -53,8 +53,6 @@ class nArmedBandit:
         a = self.greedyAction()
         r = np.random.normal(loc=self.qstar[a,i],scale=1)
         self.updateQ(r, a)
-        sys.stdout.write("\r Task: " + repr(i)) 
-        sys.stdout.flush()
         self.rewards[j] += r
         if a == np.argmax(self.qstar[:,i]):
           self.actions[j] += 1
@@ -72,8 +70,6 @@ class nArmedBandit:
         a = self.eGreedyAction()
         r = np.random.normal(loc=self.qstar[a,i],scale=1)
         self.updateQ(r, a)
-        sys.stdout.write("\r Task: " + repr(i))
-        sys.stdout.flush()
         self.rewards[j] += r
         if a == np.argmax(self.qstar[:,i]):
           self.actions[j] += 1
@@ -83,9 +79,14 @@ class nArmedBandit:
     sys.stdout.write("\n Finished")
 
   def softMaxAction(self, temperature):
-    p = np.cumsum((np.exp(self.q/temperature))/np.exp(self.q/temperature).sum())
-    return bisect.bisect_right(p, np.random.uniform())
+    p = self.q/(temperature+.1e-1)
+    p = np.cumsum((np.exp(p))/np.exp(p).sum())
+    k = np.random.uniform()
+    for i in xrange(10):
+      if k <= p[i]:
+        return i
 
+  
   def testBedSoftMax(self, temperature):
     sys.stdout.write("\r TestBed SoftMax, T=" + repr(temperature) + "\n")
     for i in xrange(self.s):
@@ -94,8 +95,6 @@ class nArmedBandit:
         a = self.softMaxAction(temperature)
         r = np.random.normal(loc=self.qstar[a,i], scale=1)
         self.updateQ(r, a)
-        sys.stdout.write("\r Task: " + repr(i))
-        sys.stdout.flush()
         self.rewards[j] += r
         if a == np.argmax(self.qstar[:,i]):
           self.actions[j] += 1
@@ -106,16 +105,14 @@ class nArmedBandit:
 
   def testBedSimulatedAnnealing(self, temperature, alpha):
     sys.stdout.write("\r TestBed Simulated Annealing, Ti=" + repr(temperature) + "\n")
+    backT = temperature
     for i in xrange(self.s):
       self.initTask()
+      temperature = backT
       for j in xrange(self.plays):
         a = self.softMaxAction(temperature)
-        print a, i
         r = np.random.normal(loc=self.qstar[a,i], scale=1)
-        print self.q, r
         self.updateQ(r, a)
-        sys.stdout.write("\r Task: " + repr(i))
-        sys.stdout.flush()
         self.rewards[j] += r
         if a == np.argmax(self.qstar[:,i]):
           self.actions[j] += 1
@@ -130,7 +127,7 @@ class nArmedBandit:
 
 def bench():
   greedy = nArmedBandit(qstar=qstar)
-#  simulatedAnnealing = nArmedBandit(qstar=qstar)
+  simulatedAnnealing = nArmedBandit(qstar=qstar)
   egreedy = nArmedBandit(epsilon=.1,qstar=qstar)
   e2greedy = nArmedBandit(epsilon=.05,qstar=qstar)
   e3greedy = nArmedBandit(epsilon=0.01,qstar=qstar)
@@ -138,7 +135,7 @@ def bench():
   softMax01 = nArmedBandit(qstar=qstar)
   softMax05 = nArmedBandit(qstar=qstar)
 
-  simulatedAnnealing.testBedSimulatedAnnealing(temperature=10, alpha=.9)
+  simulatedAnnealing.testBedSimulatedAnnealing(temperature=10, alpha=.99)
   greedy.testBedGreedy()
   egreedy.testBedEGreedy()
   e2greedy.testBedEGreedy()
@@ -156,7 +153,7 @@ def bench():
   pl.plot(softMax10.rewards/s, label="$SoftMax (T=10)$")
   pl.plot(softMax01.rewards/s, label="$SoftMax (T=0.1)$")
   pl.plot(softMax05.rewards/s, label="$SoftMax (T=0.5)$")
- # pl.plot(simulatedAnnealing.rewards/s, label="$Simulated\:Annealing (T=10, \alpha=.9)$")
+  pl.plot(simulatedAnnealing.rewards/s, label="$Simulated\:Annealing (T=10, \alpha=.9)$")
 
   pl.xlabel("$Plays$")
   pl.ylabel("$Average\:reward$")
@@ -170,7 +167,7 @@ def bench():
   pl.plot(100*softMax10.actions/s, label="$SotMax (T=10)$")
   pl.plot(100*softMax01.actions/s, label="$SotMax (T=0.1)$")
   pl.plot(100*softMax05.actions/s, label="$SotMax (T=0.5)$")
-  #pl.plot(100*simulatedAnnealing.rewards/s, label="$Simulated\:Annealing (T=10, \alpha=.9)$")
+  pl.plot(100*simulatedAnnealing.rewards/s, label="$Simulated\:Annealing (T=10, \alpha=.9)$")
 
   pl.xlabel("$Plays$")
   pl.ylabel("$Optimality\,\%$")
