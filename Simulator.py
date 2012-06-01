@@ -30,7 +30,7 @@ class Group:
         return None
 
 
-#class Simulator:
+class Simulator:
 
-#  def __init__(self,
+  def __init__(self, nGroups = 5, T=500,
 
