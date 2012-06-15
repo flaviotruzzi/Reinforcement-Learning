@@ -33,6 +33,12 @@ class Impression:
     else:
       raise AllocationException("This Impression has already been allocated")
 
+  def __repr__(self):
+    return "impression: " + repr(self.ID) + " groupID: " + repr(self.groupID) + " click: " + repr(self.click)
+  
+  def __str__(self):
+    return self.__repr__()
+
 class AllocationException(Exception):
   """Base Exception class for allocation issues."""
   def __init__(self, value):
