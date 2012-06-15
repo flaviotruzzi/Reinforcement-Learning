@@ -1,5 +1,9 @@
 import numpy as np
-
+from Agent import *
+from Campaign import *
+from Group import * 
+from Impression import *
+import random
 
 class Simulator:
   """Simulator Class"""
@@ -18,26 +22,32 @@ class Simulator:
     self.groups = {}
 
     if ngroups != None:
-      group  = Group(np.random.randint(100))
-      self.groups[group.id] = group
+      for i in xrange(ngroups):
+        group  = Group(np.random.randint(100))
+        self.groups[group.ID] = group
     else:
       if type(groups) == list:
         for i in groups:
-          self.groups[i.id] = i
+          self.groups[i.ID] = i
       elif type(groups) == dict:
         self.groups = groups
-   
-    self.campaigns = []
+      else:
+        raise Exception("ngroups or groups must be setted.")
+
+    self.campaigns = {}
 
     if ncampaigns != None:
-      campaign = Campaign(np.random.randint(3000),'CPC',CPC=np.random.rand())
-      self.campaigns[campaign.id] = campaign
+      for i in xrange(ncampaigns):
+        campaign = Campaign(np.random.randint(3000),'CPC',CPC=np.random.rand())
+        self.campaigns[campaign.ID] = campaign
     else:
-      if type(campains) == list:
+      if type(campaigns) == list:
         for i in campaigns:
-          self.campaigns[i.id] = i 
+          self.campaigns[i.ID] = i 
       elif type(campaigns) == dict:
         self.campaigns = campaigns
+      else:
+        raise Exception("ncampaigns or campaigns must be setted.")
 
     self.period = period
     
@@ -45,12 +55,12 @@ class Simulator:
 
     if pCTR == None:
       for i in self.groups:      
-        self.pCTR[i.id] = {}
+        self.pCTR[i] = {}
         for j in self.campaigns:
-          self.pCTR[i.id][j.id] = np.random.rand()
+          self.pCTR[i][j] = np.random.rand()
     else:
       self.pCTR = pCTR
-    
+   
 
   def setAgent(self, agentClass):
     """Set the class of the agent"""
@@ -61,22 +71,23 @@ class Simulator:
     counter = {}
 
     for i in self.groups:      
-      counter[i.id] = {}
+      counter[i] = {}
       for j in self.campaigns:
-        counter[i.id][j.id] = 0
+        counter[i][j] = 0
 
-    for i in impressions.keys():
-      counter[i.groupID][impressions[i].id] += 1
+    for i in impressions:
+      counter[i.groupID][impressions[i].ID] += 1
       
     for i in counter.keys():
       for j in counter[i].keys():
-        n = counter[i][j] 
-        counter[i][j] = np.random.binomial(n, self.pCTR[i][j]) 
+        n = counter[i][j]
+        if n > 0:
+          counter[i][j] = np.random.binomial(n, self.pCTR[i][j]) 
      
     self.clicked =[]
     for group in counter.keys():
       acc = 0
-      for value in counter[group]:
+      for value in counter[group].values():
         acc += value
       impressionsToUpdate = random.sample(impressions.keys(),acc)
       self.setClick(impressionsToUpdate)
@@ -85,27 +96,32 @@ class Simulator:
       
 
   def setClick(self, impressions):
-    for i in impressions
+    for i in impressions:
       i.click = True
 
 
   def simulate(self):
-    if hasattr(self, agent) != True:
+    if hasattr(self, 'agent') != True:
       raise Exception("Agent Class should be setted.")
 
-    for t in xrange(period): # Para cada tempo i em tau
-      print "Time: " + t 
+    self.campaign0 = []
+    self.campaign1 = []
+
+    for t in xrange(self.period): # Para cada tempo i em tau
+      print "Time: " + repr(t)
       impressions = []
 
       for i in self.groups:
-        impressions.append(i.generateImpressions(t))
+        impressions.append(self.groups[i].generateImpressions(t))
 
-      allocated = self.agent.allocate(impressions)
+      if len(impressions) > 0:
+        allocated = self.agent.allocate(impressions)
+        self.generateEvents(allocated)    
+        self.agent.updateState(self.clicked)
+     
+      self.campaign0.append(self.campaigns.values()[0].spentBudget)
+      self.campaign1.append(self.campaigns.values()[1].spentBudget)
 
-      self.generateEvents(allocated)
-    
-      self.agent.updateState(self.clicked)
-      
-      for i in allocated:
-        print i
+#      for i in allocated:
+#        print i
 

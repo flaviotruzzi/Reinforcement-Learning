@@ -1,5 +1,6 @@
 import uuid
 import numpy as np
+from Impression import *
 
 class Group:
   """Group class: represents a site, blog or any impression source."""
@@ -13,22 +14,22 @@ class Group:
       - impressionSource: Source of impressions, must be None if lambdaa is given. Not Implemented Yet.
       - category: category of group, not used yet.
     """
-    self.id = uuid.uuid4()
+    self.ID = uuid.uuid4()
     self.impressionLambda = impressionLambda
     self.impressionSource = impressionSource
 
   def numberOfImpressions(self, t=None):
     """Generate the number of impressions that will be issued in a instant of time"""
-    if type(lambdaa) != list:
-      return np.random.poisson(lambdaa)
+    if type(self.impressionLambda) != list:
+      return np.random.poisson(self.impressionLambda)
     else:
-      return np.random.poisson(lambdaa[t])
+      return np.random.poisson(self.impressionLambda[t])
 
   def generateImpressions(self, t):
-    if (impressionSource == None):
+    if (self.impressionSource == None):
       impressions = []
       for i in xrange(self.numberOfImpressions(t)):
-        impressions.append(Impression(self.id, t, None)) # Initialize an Impression from the group ID, in the simulation time t, with None click, the click will be updated latter.
+        impressions.append(Impression(self.ID, t, None)) # Initialize an Impression from the group ID, in the simulation time t, with None click, the click will be updated latter.
       return impressions
     else:
       raise NotImplementedError("Not implemented yet")

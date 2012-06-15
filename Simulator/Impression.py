@@ -34,7 +34,7 @@ class Impression:
       raise AllocationException("This Impression has already been allocated")
 
   def __repr__(self):
-    return "impression: " + repr(self.ID) + " groupID: " + repr(self.groupID) + " click: " + repr(self.click)
+    return "impression: " + repr(self.ID) + " groupID: " + repr(self.groupID) + " click: " + repr(self.click) + " allocated to: " + repr(self.campaignID)
   
   def __str__(self):
     return self.__repr__()

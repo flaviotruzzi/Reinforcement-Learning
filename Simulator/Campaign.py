@@ -20,25 +20,25 @@ class Campaign:
     self.initialPeriod = initialPeriod
     self.validPeriod = validPeriod
     self.spentBudget = 0
-    self.CPC = CPC
+    self.CPC = CPC + 1
 
   def update(self, impressionsAllocated):
     """Update the campaign with the allocated impressions. Only impressions that result in change of spent budget is given.
     """
-    if model == 'CPC':
+    if self.model == 'CPC':
       self.updateCPC(impressionsAllocated)
-    elif model == 'CPA':
+    elif self.model == 'CPA':
       self.updateCPA(impressionsAllocated)
-    elif model == 'CPL':
+    elif self.model == 'CPL':
       self.updateCPL(impressionsAllocated)
-    elif model == 'CPS':
+    elif self.model == 'CPS':
       self.updateCPS(impressionsAllocated)
 
   def updateCPC(self, impressionsAllocated):
     """Update CPC campaign by summing all the spent budget with impressions.
     """
-    for i in ImpressionsAllocated:
-      self.spentBudget += self.CPC
+#    for i in impressionsAllocated:
+    self.spentBudget += self.CPC
 
   def updateCPA(self, impressionsAllocated):
     raise NotImplementedError("TODO")
