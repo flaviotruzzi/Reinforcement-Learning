@@ -20,7 +20,7 @@ class Campaign:
     self.initialPeriod = initialPeriod
     self.validPeriod = validPeriod
     self.spentBudget = 0
-    self.CPC = CPC + 1
+    self.CPC = CPC 
 
   def update(self, impressionsAllocated):
     """Update the campaign with the allocated impressions. Only impressions that result in change of spent budget is given.

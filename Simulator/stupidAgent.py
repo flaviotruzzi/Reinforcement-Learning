@@ -23,7 +23,7 @@ class stupidAgent(Agent):
   
           if len(self.campaignsX) > 0:
 
-            if (self.campaignsX[0].spentBudget <= self.campaignsX[0].budget):
+            if (self.campaignsX[0].spentBudget + self.campaignsX[0].CPC <= self.campaignsX[0].budget):
 
               result[impression] = self.campaignsX[0]
               impression.allocate(self.campaignsX[0].ID)

@@ -106,6 +106,7 @@ class Simulator:
 
     self.campaign0 = []
     self.campaign1 = []
+    self.campaign2 = []
 
     for t in xrange(self.period): # Para cada tempo i em tau
       print "Time: " + repr(t)
@@ -121,7 +122,7 @@ class Simulator:
      
       self.campaign0.append(self.campaigns.values()[0].spentBudget)
       self.campaign1.append(self.campaigns.values()[1].spentBudget)
-
+      self.campaign2.append(self.campaigns.values()[2].spentBudget)
 #      for i in allocated:
 #        print i
 

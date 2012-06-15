@@ -18,6 +18,8 @@ class Group:
     self.impressionLambda = impressionLambda
     self.impressionSource = impressionSource
 
+    self.impressions = []
+
   def numberOfImpressions(self, t=None):
     """Generate the number of impressions that will be issued in a instant of time"""
     if type(self.impressionLambda) != list:
@@ -30,6 +32,7 @@ class Group:
       impressions = []
       for i in xrange(self.numberOfImpressions(t)):
         impressions.append(Impression(self.ID, t, None)) # Initialize an Impression from the group ID, in the simulation time t, with None click, the click will be updated latter.
+      self.impressions.append(len(impressions))
       return impressions
     else:
       raise NotImplementedError("Not implemented yet")
